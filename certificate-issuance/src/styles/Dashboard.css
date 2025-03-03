@@ -1,0 +1,278 @@
+/* ✅ General Styling */
+.dashboard-container {
+    max-width: 85%;
+    margin: auto;
+    font-family: "Poppins", sans-serif;
+}
+
+/* ✅ Section Titles */
+.section-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 25px 0;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ✅ User Profile Section */
+.user-profile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 15px 22px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: 0.3s ease-in-out;
+}
+
+.user-profile:hover {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+    border-radius: 50%;
+    border: 2px solid #3498db;
+    padding: 3px;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #7f8c8d;
+    display: block;
+}
+
+/* ✅ Logout Button */
+.logout-btn {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+}
+
+/* ✅ Certificate Request Form */
+.upload-section {
+    background: #ecf0f1;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15);
+    margin: 30px auto;
+    width: 50%;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+}
+
+.upload-section:hover {
+    box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.upload-section h2 {
+    font-size: 22px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+}
+
+/* ✅ Input Fields */
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Label Styling */
+.input-group label {
+    font-size: 16px;
+    color: #2c3e50;
+    font-weight: 500;
+    margin-bottom: 5px;
+    width: 85%;
+    text-align: left;
+}
+
+/* Input and File Styling */
+.input-field,
+.file-input {
+    width: 85%;
+    padding: 12px;
+    border: 2px solid #bdc3c7;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+    background: white;
+}
+
+.input-field:focus,
+.file-input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0px 0px 8px rgba(52, 152, 219, 0.5);
+}
+
+/* ✅ Placeholder Styling */
+.input-field::placeholder,
+.file-input::placeholder {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* ✅ File Input Styling */
+.file-input {
+    cursor: pointer;
+    padding: 10px;
+    background: #ffffff;
+}
+
+/* ✅ Submit Button */
+.submit-btn {
+    background: #27ae60;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-top: 10px;
+    width: 88%;
+}
+
+.submit-btn:hover {
+    background: #219150;
+    transform: scale(1.03);
+}
+
+/* ✅ Previous Requests Table */
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.requests-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.requests-table td {
+    text-align: center;
+    padding: 12px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.3s ease-in-out;
+}
+
+/* ✅ Row Hover Effect */
+.requests-table tbody tr:hover {
+    background: #f1f1f1;
+}
+
+/* ✅ Status Colors */
+.status-approved {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.status-rejected {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.status-pending {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* ✅ Responsive Design */
+@media screen and (max-width: 1024px) {
+    .upload-section {
+        width: 65%;
+    }
+
+    .user-profile {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .logout-btn {
+        margin-top: 10px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .upload-section {
+        width: 85%;
+    }
+
+    .requests-table {
+        font-size: 13px;
+    }
+
+    .submit-btn {
+        padding: 10px 16px;
+        width: 100%;
+    }
+
+    .input-field,
+    .file-input {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dashboard-container {
+        max-width: 95%;
+    }
+
+    .upload-section {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .requests-table {
+        font-size: 12px;
+    }
+}
