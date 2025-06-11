@@ -74,7 +74,7 @@ const getAllRequests = async (req, res) => {
     }
 };
 
-// ✅ Update certificate status & send email notification with attachment (Admin Only)
+// ✅ Update certificate status & send email notification (Admin Only)
 const updateRequestStatus = async (req, res) => {
     const { requestId } = req.params;
     const { status, remarks } = req.body;
@@ -94,31 +94,32 @@ const updateRequestStatus = async (req, res) => {
 
         await request.save();
 
-        // ✅ Certificate File Path (Modify as needed)
-        const certificatePath = path.join(__dirname, "../uploads", `${request._id}.pdf`);
+        console.log(`ℹ️ Preparing email for ${status.toUpperCase()} to ${request.applicantEmail}`);
 
-        // ✅ Prepare email options
-        const mailOptions = {
+        let emailSubject = `Certificate Request ${status.toUpperCase()}`;
+        let emailText = `Hello ${request.applicantName},\n\nYour certificate request has been ${status.toUpperCase()}.\n\nRemarks: ${remarks || "No additional remarks."}\n\nBest regards,\nCertificate Issuance System`;
+
+        let mailOptions = {
             from: process.env.EMAIL_USER,
             to: request.applicantEmail,
-            subject: `Certificate Request ${status.toUpperCase()}`,
-            text: `Hello ${request.applicantName},\n\nYour certificate request has been ${status.toUpperCase()}.\n\nRemarks: ${remarks || "No additional remarks."}\n\nBest regards,\nCertificate Issuance System`,
-            attachments: status === "approved" && fs.existsSync(certificatePath) 
-                ? [{ filename: `${request._id}.pdf`, path: certificatePath }]
-                : [],
+            subject: emailSubject,
+            text: emailText,
         };
 
-        // ✅ Send email
+        // ✅ Send email without attachments
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.error("❌ Email sending failed:", error);
-            } else {
-                console.log("✅ Email sent with attachment:", info.response);
+                return res.status(500).json({ message: "❌ Email sending failed", error: error.message });
             }
+
+            console.log(`✅ Email sent successfully: ${info.response}`);
+
+            res.json({ message: `✅ Request ${status} successfully`, request });
         });
 
-        res.json({ message: `✅ Request ${status} successfully`, request });
     } catch (err) {
+        console.error("❌ Error updating request status:", err);
         res.status(500).json({ message: "❌ Error updating request status", error: err.message });
     }
 };

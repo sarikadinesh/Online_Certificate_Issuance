@@ -11,6 +11,8 @@ const {
   getRequestById,
   serveUploadedFiles,
 } = require("../controllers/certificateController");
+const { addVerificationTicket } = require("../utils/pdfHelper"); // ✅ PDF processing function
+const Certificate = require("../models/CertificateRequest"); // ✅ Certificate model
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
@@ -22,11 +24,10 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// ✅ Multer Storage Configuration (Fixing File Path Encoding)
+// ✅ Multer Storage Configuration (Handles Special Characters)
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir), // Upload directory
+  destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
-    // Remove spaces, special characters, and ensure a safe filename
     const safeName = file.originalname.replace(/\s+/g, "_").replace(/[()]/g, "").replace(/[^a-zA-Z0-9._-]/g, "");
     cb(null, `${Date.now()}_${safeName}`);
   },
@@ -71,8 +72,75 @@ router.get("/pending", authMiddleware, getPendingRequests);
 // 📝 **Admin: Get All Requests (Includes Applicant Details)**
 router.get("/all", authMiddleware, adminMiddleware, getAllRequests);
 
-// 📝 **Admin: Update Certificate Status & Add Remarks**
-router.put("/:requestId", authMiddleware, adminMiddleware, updateRequestStatus);
+// 📝 **Admin: Approve Certificate & Add Verification Ticket**
+router.put("/:requestId/approve", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const certificate = await Certificate.findById(requestId);
+
+    if (!certificate) {
+      return res.status(404).json({ message: "Certificate not found" });
+    }
+
+    if (certificate.status === "approved") {
+      return res.status(400).json({ message: "Certificate is already approved" });
+    }
+
+    // ✅ Ensure documentPath is correct
+    let fileName = path.basename(certificate.documentPath); // Extract only filename
+    let filePath = path.join(uploadDir, fileName); // Reconstruct full path
+
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ File not found: ${filePath}`);
+      return res.status(404).json({ message: `File not found: ${filePath}` });
+    }
+
+    // ✅ Generate new PDF with verification ticket
+    const verifiedFileName = await addVerificationTicket(fileName, requestId);
+    const verifiedFilePath = path.join(uploadDir, verifiedFileName);
+
+    if (!fs.existsSync(verifiedFilePath)) {
+      return res.status(500).json({ message: "Failed to generate verified certificate" });
+    }
+
+    // ✅ Update database with new file path
+    certificate.status = "approved";
+    certificate.remarks = req.body.remarks || "Approved";
+    certificate.documentPath = verifiedFileName; // Store only the filename
+    await certificate.save();
+
+    res.json({ message: "Certificate approved & verification ticket added", verifiedFilePath });
+  } catch (error) {
+    console.error("❌ Error approving certificate:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
+
+// 📝 **Admin: Reject Certificate**
+router.put("/:requestId/reject", authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { status, remarks } = req.body;
+
+    const request = await Certificate.findById(requestId);
+    if (!request) return res.status(404).json({ message: "❌ Request not found" });
+
+    const validStatuses = ["approved", "rejected", "pending"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "❌ Invalid status provided" });
+    }
+
+    request.status = status;
+    request.remarks = remarks || request.remarks;
+    if (status === "approved") request.issuedDate = new Date();
+
+    await request.save();
+
+    res.json({ message: `✅ Request ${status} successfully`, request });
+  } catch (err) {
+    res.status(500).json({ message: "❌ Error updating request status", error: err.message });
+  }
+});
 
 // 📝 **Applicant/Admin: Get Request by ID**
 router.get("/:requestId", authMiddleware, getRequestById);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa"; 
+import { FaUserCircle } from "react-icons/fa";
 import API from "../api/api";
 import "../styles/AdminDashboard.css";
 
@@ -18,23 +18,21 @@ const AdminDashboard = () => {
             .catch((error) => console.error("Error fetching requests:", error));
     }, []);
 
-    
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         localStorage.removeItem("userName");
-        navigate("/login"); 
+        navigate("/login");
     };
 
-    // Handle remarks change
     const handleRemarksChange = (id, value) => {
         setRemarks((prev) => ({ ...prev, [id]: value }));
     };
 
-    // Handle Approve
+    // ✅ Corrected Approve Endpoint
     const handleApprove = (id) => {
         const remark = remarks[id] || "Approved";
-        API.put(`/certificates/${id}`, { status: "approved", remarks: remark })
+        API.put(`/certificates/${id}/approve`, { remarks: remark }) // <-- updated path
             .then(() => {
                 setRequests((prev) =>
                     prev.map((req) =>
@@ -45,7 +43,6 @@ const AdminDashboard = () => {
             .catch((error) => console.error("Error approving request:", error));
     };
 
-    // Handle Reject
     const handleReject = (id) => {
         const remark = remarks[id] || "Rejected";
         API.put(`/certificates/${id}`, { status: "rejected", remarks: remark })
@@ -65,7 +62,6 @@ const AdminDashboard = () => {
 
     return (
         <div className="dashboard-container">
-            {/* ✅ Dashboard Header with Logout */}
             <div className="dashboard-header">
                 <h2 className="dashboard-title">Admin Dashboard</h2>
                 <div className="user-profile">
@@ -76,7 +72,7 @@ const AdminDashboard = () => {
                 </div>
             </div>
 
-            {/* ✅ Table for Pending Requests */}
+            {/* Pending Requests */}
             <h3 className="section-title">Pending Certificate Requests</h3>
             <table className="styled-table">
                 <thead>
@@ -111,9 +107,9 @@ const AdminDashboard = () => {
                             </td>
                             <td>
                                 {request.documentPath ? (
-                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`} 
-                                       download className="file-link" 
-                                       target="_blank" rel="noopener noreferrer">
+                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`}
+                                        download className="file-link"
+                                        target="_blank" rel="noopener noreferrer">
                                         Download Certificate
                                     </a>
                                 ) : "No Certificate Uploaded"}
@@ -123,7 +119,7 @@ const AdminDashboard = () => {
                 </tbody>
             </table>
 
-            {/* ✅ Approved Requests */}
+            {/* Approved Requests */}
             <h3 className="section-title">Approved Certificate Requests</h3>
             <table className="styled-table">
                 <thead>
@@ -146,9 +142,9 @@ const AdminDashboard = () => {
                             <td>{request.remarks || "N/A"}</td>
                             <td>
                                 {request.documentPath ? (
-                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`} 
-                                       download className="file-link" 
-                                       target="_blank" rel="noopener noreferrer">
+                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`}
+                                        download className="file-link"
+                                        target="_blank" rel="noopener noreferrer">
                                         Download Certificate
                                     </a>
                                 ) : "No Certificate Uploaded"}
@@ -158,7 +154,7 @@ const AdminDashboard = () => {
                 </tbody>
             </table>
 
-            {/* ✅ Rejected Requests */}
+            {/* Rejected Requests */}
             <h3 className="section-title">Rejected Certificate Requests</h3>
             <table className="styled-table">
                 <thead>
@@ -181,9 +177,9 @@ const AdminDashboard = () => {
                             <td>{request.remarks || "N/A"}</td>
                             <td>
                                 {request.documentPath ? (
-                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`} 
-                                       download className="file-link" 
-                                       target="_blank" rel="noopener noreferrer">
+                                    <a href={`${process.env.REACT_APP_API_BASE_URL || ''}${request.documentPath}`}
+                                        download className="file-link"
+                                        target="_blank" rel="noopener noreferrer">
                                         Download Certificate
                                     </a>
                                 ) : "No Certificate Uploaded"}
